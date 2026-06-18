@@ -153,7 +153,7 @@ export default function App() {
         {/* Loading hint */}
         {loading && (
           <p className="loading-hint">
-            Processando com Claude AI. PDFs longos podem levar alguns segundos…
+            Convertendo PDF. Documentos longos podem levar alguns segundos…
           </p>
         )}
 
