@@ -133,11 +133,14 @@ async def create_checkout(body: CheckoutRequest):
 async def abacatepay_webhook(request: Request):
     payload = await request.json()
 
-    if payload.get("event") != "billing.paid":
+    if payload.get("event") not in ("checkout.completed", "billing.paid"):
         return JSONResponse({"ok": True})
 
     billing = payload.get("data", {})
-    email = billing.get("customer", {}).get("email", "")
+    email = (
+        billing.get("customer", {}).get("email")
+        or billing.get("metadata", {}).get("email", "")
+    )
     plan = billing.get("products", [{}])[0].get("externalId", "monthly")
     payment_id = billing.get("id", "")
 
