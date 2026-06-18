@@ -122,11 +122,21 @@ async def create_checkout(body: CheckoutRequest):
             },
         )
 
+    print(f"AbacatePay status: {resp.status_code} — {resp.text}")
+
     if resp.status_code != 200:
-        raise HTTPException(status_code=502, detail=f"Erro AbacatePay: {resp.text}")
+        raise HTTPException(status_code=502, detail=f"Erro AbacatePay ({resp.status_code}): {resp.text}")
 
     data = resp.json()
-    return {"checkout_url": data["data"]["url"]}
+    url = (
+        data.get("data", {}).get("url")
+        or data.get("data", {}).get("checkoutUrl")
+        or data.get("url")
+    )
+    if not url:
+        raise HTTPException(status_code=502, detail=f"URL de checkout não retornada: {data}")
+
+    return {"checkout_url": url}
 
 
 @app.post("/webhook/abacatepay")
