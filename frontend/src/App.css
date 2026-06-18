@@ -34,6 +34,225 @@ header p {
   font-size: 0.95rem;
 }
 
+.header-license {
+  margin-top: 0.75rem;
+}
+
+.badge-premium {
+  display: inline-block;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+}
+
+.btn-upgrade {
+  background: transparent;
+  border: 2px solid #6366f1;
+  color: #6366f1;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-upgrade:hover {
+  background: #6366f1;
+  color: #fff;
+}
+
+/* File list (multiple files) */
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* Result tabs */
+.result-tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem 0;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.result-tabs button {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #666;
+  transition: background 0.15s;
+}
+
+.result-tabs button.active {
+  background: #6366f1;
+  color: #fff;
+  border-color: #6366f1;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+}
+
+.modal h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.modal p {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.modal-actions .btn-primary {
+  margin: 0;
+  width: 100%;
+}
+
+.modal-actions .btn-primary.featured {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.btn-link {
+  display: block;
+  margin-top: 1rem;
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-align: center;
+}
+
+/* Plans */
+.plans {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.plan-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+}
+
+.plan-card.featured {
+  border-color: #6366f1;
+}
+
+.plan-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #6366f1;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.plan-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+}
+
+.plan-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.plan-price span {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #888;
+}
+
+/* Inputs */
+.input-email,
+.input-license {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 0.5rem;
+}
+
+.input-email:focus,
+.input-license:focus {
+  border-color: #6366f1;
+}
+
+.input-license {
+  font-family: monospace;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+}
+
+.license-error {
+  color: #b91c1c;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
 /* Drop zone */
 .drop-zone {
   border: 2px dashed #ccc;
