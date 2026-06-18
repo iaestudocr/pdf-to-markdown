@@ -108,7 +108,7 @@ async def create_checkout(body: CheckoutRequest):
             f"{ABACATEPAY_API_URL}/checkouts/create",
             headers={"Authorization": f"Bearer {api_key}"},
             json={
-                "products": [
+                "items": [
                     {
                         "externalId": body.plan,
                         "name": label,
