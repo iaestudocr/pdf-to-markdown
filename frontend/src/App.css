@@ -171,53 +171,74 @@ header p {
   text-align: center;
 }
 
-/* Plan compare */
-.plan-compare {
-  display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.plan-tier {
-  border: 2px solid #e5e7eb;
+/* Free plan box */
+.plan-free-box {
+  background: #f0fdf4;
+  border: 2px solid #86efac;
   border-radius: 10px;
-  padding: 1rem;
-}
-
-.plan-tier.premium {
-  border-color: #6366f1;
-  background: #fafafe;
-}
-
-.plan-tier-badge {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #6366f1;
-  margin-bottom: 0.3rem;
-}
-
-.plan-tier-name {
-  font-weight: 700;
-  font-size: 1rem;
-  margin-bottom: 0.4rem;
-}
-
-.plan-tier-price {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #111;
+  padding: 1rem 1.25rem;
   margin-bottom: 0.75rem;
 }
 
-.plan-features {
+.plan-free-label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #166534;
+  margin-bottom: 0.5rem;
+}
+
+.plan-free-features {
   list-style: none;
-  font-size: 0.83rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 1rem;
+  font-size: 0.85rem;
   color: #444;
+}
+
+/* Divider */
+.plan-divider {
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0.75rem;
+  color: #999;
+  font-size: 0.8rem;
+}
+
+.plan-divider::before,
+.plan-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+/* Premium box */
+.plan-premium-box {
+  border: 2px solid #6366f1;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  background: #fafafe;
+  margin-bottom: 0.5rem;
+}
+
+.plan-premium-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   margin-bottom: 0.75rem;
+}
+
+.plan-premium-tag {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #6366f1;
+}
+
+.plan-premium-extra {
+  font-size: 0.82rem;
+  color: #555;
 }
 
 /* Plans */

@@ -279,55 +279,57 @@ export default function App() {
             <button className="modal-close" onClick={() => setShowUpgradeModal(false)}>✕</button>
             <h2>Planos</h2>
 
-            <div className="plan-compare">
-              <div className="plan-tier free">
-                <div className="plan-tier-name">Gratuito</div>
-                <div className="plan-tier-price">R$ 0</div>
-                <ul className="plan-features">
-                  <li>✅ 1 arquivo por vez</li>
-                  <li>✅ PDFs digitais</li>
-                  <li>✅ Download .md</li>
-                  <li>✅ Sem cadastro</li>
-                </ul>
+            {/* Plano Gratuito */}
+            <div className="plan-free-box">
+              <div className="plan-free-label">Seu plano atual — Gratuito</div>
+              <ul className="plan-free-features">
+                <li>✅ 1 arquivo por vez</li>
+                <li>✅ PDFs digitais</li>
+                <li>✅ Download .md</li>
+                <li>✅ Sem cadastro</li>
+              </ul>
+            </div>
+
+            <div className="plan-divider">
+              <span>Quer mais? Faça upgrade</span>
+            </div>
+
+            {/* Plano Premium */}
+            <div className="plan-premium-box">
+              <div className="plan-premium-header">
+                <span className="plan-premium-tag">⭐ Premium</span>
+                <span className="plan-premium-extra">+ até 10 arquivos por vez</span>
               </div>
-              <div className="plan-tier premium">
-                <div className="plan-tier-badge">⭐ Premium</div>
-                <div className="plan-tier-name">Premium</div>
-                <ul className="plan-features">
-                  <li>✅ Tudo do gratuito</li>
-                  <li>✅ Até <strong>10 arquivos</strong> por vez</li>
-                  <li>✅ Prioridade no servidor</li>
-                </ul>
-                <div className="plans">
-                  <div className="plan-card">
-                    <div className="plan-name">Mensal</div>
-                    <div className="plan-price">R$ 6,90<span>/30 dias</span></div>
-                  </div>
-                  <div className="plan-card featured">
-                    <div className="plan-badge">Melhor valor</div>
-                    <div className="plan-name">Anual</div>
-                    <div className="plan-price">R$ 49,97<span>/ano</span></div>
-                  </div>
+
+              <div className="plans">
+                <div className="plan-card">
+                  <div className="plan-name">Mensal</div>
+                  <div className="plan-price">R$ 6,90<span>/30 dias</span></div>
                 </div>
-
-                <input
-                  className="input-email"
-                  type="email"
-                  placeholder="Seu email (receberá a chave de licença)"
-                  value={email}
-                  onChange={(e) => { setEmail(e.target.value); setLicenseError(""); }}
-                />
-
-                {licenseError && <p className="license-error">{licenseError}</p>}
-
-                <div className="modal-actions">
-                  <button className="btn-primary" onClick={() => handleCheckout("monthly")} disabled={checkoutLoading}>
-                    {checkoutLoading ? <><span className="spinner" /> Aguarde…</> : "Pagar Mensal — R$ 6,90"}
-                  </button>
-                  <button className="btn-primary featured" onClick={() => handleCheckout("yearly")} disabled={checkoutLoading}>
-                    {checkoutLoading ? <><span className="spinner" /> Aguarde…</> : "Pagar Anual — R$ 49,97"}
-                  </button>
+                <div className="plan-card featured">
+                  <div className="plan-badge">Melhor valor</div>
+                  <div className="plan-name">Anual</div>
+                  <div className="plan-price">R$ 49,97<span>/ano</span></div>
                 </div>
+              </div>
+
+              <input
+                className="input-email"
+                type="email"
+                placeholder="Seu email (receberá a chave de licença)"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setLicenseError(""); }}
+              />
+
+              {licenseError && <p className="license-error">{licenseError}</p>}
+
+              <div className="modal-actions">
+                <button className="btn-primary" onClick={() => handleCheckout("monthly")} disabled={checkoutLoading}>
+                  {checkoutLoading ? <><span className="spinner" /> Aguarde…</> : "Pagar Mensal — R$ 6,90"}
+                </button>
+                <button className="btn-primary featured" onClick={() => handleCheckout("yearly")} disabled={checkoutLoading}>
+                  {checkoutLoading ? <><span className="spinner" /> Aguarde…</> : "Pagar Anual — R$ 49,97"}
+                </button>
               </div>
             </div>
 
