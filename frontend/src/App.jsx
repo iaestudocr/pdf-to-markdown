@@ -124,7 +124,11 @@ export default function App() {
       const form = new FormData();
       form.append("file", file);
       try {
-        const res = await fetch(`${API_URL}/convert`, { method: "POST", body: form });
+        const res = await fetch(`${API_URL}/convert`, {
+            method: "POST",
+            headers: licenseKey ? { "X-License-Key": licenseKey } : {},
+            body: form,
+          });
         if (!res.ok) {
           const d = await res.json().catch(() => ({}));
           newResults.push({ filename: file.name, error: d.detail || `Erro ${res.status}` });
