@@ -147,7 +147,7 @@ async def create_checkout(body: CheckoutRequest, request: Request):
             json={
                 "items": [
                     {
-                        "externalId": body.plan,
+                        "id": body.plan,
                         "name": label,
                         "quantity": 1,
                         "price": price,
@@ -226,7 +226,7 @@ async def abacatepay_webhook(request: Request):
 
     # Tenta extrair o plano de "items" ou "products" (compatibilidade)
     items = billing.get("items") or billing.get("products") or [{}]
-    plan = items[0].get("externalId", "monthly")
+    plan = items[0].get("id") or items[0].get("externalId", "monthly")
     payment_id = billing.get("id", "")
 
     if not email:
