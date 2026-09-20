@@ -302,15 +302,39 @@ async def validate_license(body: ValidateLicenseRequest, request: Request):
 
 # ── OCR ─────────────────────────────────────────────────
 
+MAX_OCR_PAGES = 20  # limite para evitar OOM/timeout no free tier
+
+
 def ocr_pdf(pdf_data: bytes) -> str:
-    """Converte PDF escaneado em texto via OCR (pytesseract + poppler)."""
-    images = convert_from_bytes(pdf_data, dpi=150)
-    pages = []
-    for i, image in enumerate(images, 1):
-        text = pytesseract.image_to_string(image, lang="por+eng")
-        if text.strip():
-            pages.append(f"## Página {i}\n\n{text.strip()}")
-    return "\n\n---\n\n".join(pages)
+    """Converte PDF escaneado em texto via OCR, uma página por vez (economiza RAM)."""
+    doc = pymupdf.open(stream=pdf_data, filetype="pdf")
+    page_count = len(doc)
+    doc.close()
+
+    pages_to_process = min(page_count, MAX_OCR_PAGES)
+    pages_text = []
+
+    for i in range(1, pages_to_process + 1):
+        images = convert_from_bytes(
+            pdf_data, dpi=100, first_page=i, last_page=i, fmt="jpeg"
+        )
+        if images:
+            image = images[0].convert("L")  # grayscale: menos memória, melhor OCR
+            text = pytesseract.image_to_string(image, lang="por+eng", config="--psm 1")
+            if text.strip():
+                pages_text.append(f"## Página {i}\n\n{text.strip()}")
+            del image, images
+
+    result = "\n\n---\n\n".join(pages_text)
+
+    if page_count > MAX_OCR_PAGES:
+        result += (
+            f"\n\n---\n\n> ⚠️ PDF com {page_count} páginas. "
+            f"Por limitação do servidor gratuito, apenas as primeiras "
+            f"{MAX_OCR_PAGES} foram processadas via OCR."
+        )
+
+    return result
 
 
 # ── Conversão PDF ────────────────────────────────────────
