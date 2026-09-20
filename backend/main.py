@@ -34,7 +34,7 @@ app = FastAPI(title="PDF to Markdown Converter")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://pdf-to-markdown-xr0v.onrender.com"],
+    allow_origins=["http://localhost:5173", "https://pdf-to-markdown-fhux.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -318,13 +318,14 @@ def ocr_pdf(pdf_data: bytes) -> str:
 
     for i in range(pages_to_process):
         page = doc[i]
-        # Zoom 0.8: resolução suficiente para OCR, ~40% menos memória que 1.2
-        mat = pymupdf.Matrix(0.8, 0.8)
+        # Zoom 1.0: equilíbrio qualidade/memória — melhora numerais romanos e acentos
+        mat = pymupdf.Matrix(1.0, 1.0)
         pix = page.get_pixmap(matrix=mat, colorspace=pymupdf.csGRAY)
-        img_bytes = pix.tobytes("jpeg", jpg_quality=70)
+        img_bytes = pix.tobytes("jpeg", jpg_quality=80)
         del pix
         img = Image.open(io.BytesIO(img_bytes))
-        text = pytesseract.image_to_string(img, lang="por+eng", config="--psm 1 --oem 1")
+        # psm 6: bloco de texto uniforme — ideal para documentos jurídicos
+        text = pytesseract.image_to_string(img, lang="por+eng", config="--psm 6 --oem 1")
         del img
         if text.strip():
             pages_text.append(f"## Página {i + 1}\n\n{text.strip()}")
