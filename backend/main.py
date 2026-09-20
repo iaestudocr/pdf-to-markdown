@@ -13,6 +13,13 @@ from email.mime.text import MIMEText
 import httpx
 import pymupdf
 import pymupdf4llm
+
+try:
+    from pdf2image import convert_from_bytes
+    import pytesseract
+    OCR_AVAILABLE = True
+except ImportError:
+    OCR_AVAILABLE = False
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -293,6 +300,19 @@ async def validate_license(body: ValidateLicenseRequest, request: Request):
     }
 
 
+# ── OCR ─────────────────────────────────────────────────
+
+def ocr_pdf(pdf_data: bytes) -> str:
+    """Converte PDF escaneado em texto via OCR (pytesseract + poppler)."""
+    images = convert_from_bytes(pdf_data, dpi=150)
+    pages = []
+    for i, image in enumerate(images, 1):
+        text = pytesseract.image_to_string(image, lang="por+eng")
+        if text.strip():
+            pages.append(f"## Página {i}\n\n{text.strip()}")
+    return "\n\n---\n\n".join(pages)
+
+
 # ── Conversão PDF ────────────────────────────────────────
 
 @app.post("/convert")
@@ -339,6 +359,8 @@ async def convert_pdf(request: Request, file: UploadFile = File(...)):
     if not pdf_data.startswith(b"%PDF"):
         raise HTTPException(status_code=400, detail="Arquivo não é um PDF válido.")
 
+    ocr_used = False
+
     try:
         doc = pymupdf.open(stream=pdf_data, filetype="pdf")
         md_text = pymupdf4llm.to_markdown(doc)
@@ -347,15 +369,31 @@ async def convert_pdf(request: Request, file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Erro ao converter PDF: {str(e)}")
 
     if not md_text.strip():
+        if not OCR_AVAILABLE:
+            raise HTTPException(
+                status_code=422,
+                detail="PDF escaneado detectado, mas o OCR não está disponível neste servidor.",
+            )
+        try:
+            md_text = ocr_pdf(pdf_data)
+            ocr_used = True
+        except Exception as e:
+            raise HTTPException(
+                status_code=422,
+                detail=f"PDF escaneado — OCR falhou: {str(e)}. Tente um PDF com melhor qualidade de imagem.",
+            )
+
+    if not md_text.strip():
         raise HTTPException(
             status_code=422,
-            detail="PDF escaneado ou sem texto selecionável. Esta versão processa apenas PDFs digitais.",
+            detail="Não foi possível extrair texto deste PDF. Verifique a qualidade do arquivo.",
         )
 
     return {
         "markdown": md_text,
         "filename": file.filename,
-        "pages_note": "Processado com sucesso.",
+        "pages_note": "Convertido via OCR (PDF escaneado)." if ocr_used else "Processado com sucesso.",
+        "ocr_used": ocr_used,
     }
 
 

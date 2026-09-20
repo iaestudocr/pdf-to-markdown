@@ -134,7 +134,7 @@ export default function App() {
           newResults.push({ filename: file.name, error: d.detail || `Erro ${res.status}` });
         } else {
           const d = await res.json();
-          newResults.push({ filename: file.name, markdown: d.markdown });
+          newResults.push({ filename: file.name, markdown: d.markdown, ocr: d.ocr_used });
         }
       } catch (err) {
         newResults.push({ filename: file.name, error: "Erro ao conectar ao servidor." });
@@ -253,7 +253,12 @@ export default function App() {
 
             {current?.error ? (
               <div className="error-box" style={{margin:"1rem"}}>⚠️ {current.error}</div>
-            ) : (
+            ) : current?.ocr ? (
+              <div style={{margin:"0.75rem 1rem 0", padding:"0.6rem 1rem", background:"#fffbeb", border:"1px solid #fcd34d", borderRadius:"8px", fontSize:"0.85rem", color:"#92400e"}}>
+                🔍 Convertido via OCR — PDF escaneado. Verifique o resultado, pois OCR pode ter imprecisões.
+              </div>
+            ) : null}
+            {!current?.error && (
               <>
                 <div className="result-toolbar">
                   <div className="view-toggle">
