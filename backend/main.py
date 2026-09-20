@@ -427,6 +427,18 @@ async def health():
     return {"status": "ok"}
 
 
+@app.get("/test-ocr")
+async def test_ocr():
+    """Diagnóstico: verifica se tesseract está instalado."""
+    if not OCR_AVAILABLE:
+        return {"ocr": False, "reason": "pytesseract ou Pillow não instalado"}
+    try:
+        version = pytesseract.get_tesseract_version()
+        return {"ocr": True, "tesseract_version": str(version)}
+    except Exception as e:
+        return {"ocr": False, "reason": str(e)}
+
+
 # ── Frontend estático ────────────────────────────────────
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
