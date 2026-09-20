@@ -15,8 +15,9 @@ import pymupdf
 import pymupdf4llm
 
 try:
-    from pdf2image import convert_from_bytes
+    import io
     import pytesseract
+    from PIL import Image
     OCR_AVAILABLE = True
 except ImportError:
     OCR_AVAILABLE = False
@@ -302,29 +303,29 @@ async def validate_license(body: ValidateLicenseRequest, request: Request):
 
 # ── OCR ─────────────────────────────────────────────────
 
-MAX_OCR_PAGES = 20  # limite para evitar OOM/timeout no free tier
+MAX_OCR_PAGES = 15  # limite para evitar OOM/timeout no free tier
 
 
 def ocr_pdf(pdf_data: bytes) -> str:
-    """Converte PDF escaneado em texto via OCR, uma página por vez (economiza RAM)."""
+    """Usa PyMuPDF para renderizar páginas e pytesseract para OCR.
+    Sem dependência de poppler — PyMuPDF renderiza nativamente."""
     doc = pymupdf.open(stream=pdf_data, filetype="pdf")
     page_count = len(doc)
-    doc.close()
-
     pages_to_process = min(page_count, MAX_OCR_PAGES)
     pages_text = []
 
-    for i in range(1, pages_to_process + 1):
-        images = convert_from_bytes(
-            pdf_data, dpi=100, first_page=i, last_page=i, fmt="jpeg"
-        )
-        if images:
-            image = images[0].convert("L")  # grayscale: menos memória, melhor OCR
-            text = pytesseract.image_to_string(image, lang="por+eng", config="--psm 1")
-            if text.strip():
-                pages_text.append(f"## Página {i}\n\n{text.strip()}")
-            del image, images
+    for i in range(pages_to_process):
+        page = doc[i]
+        # Renderiza a página como imagem em escala de cinza (sem poppler)
+        mat = pymupdf.Matrix(1.2, 1.2)  # zoom moderado: qualidade vs memória
+        pix = page.get_pixmap(matrix=mat, colorspace=pymupdf.csGRAY)
+        img = Image.open(io.BytesIO(pix.tobytes("jpeg")))
+        text = pytesseract.image_to_string(img, lang="por+eng", config="--psm 1")
+        if text.strip():
+            pages_text.append(f"## Página {i + 1}\n\n{text.strip()}")
+        del pix, img
 
+    doc.close()
     result = "\n\n---\n\n".join(pages_text)
 
     if page_count > MAX_OCR_PAGES:
