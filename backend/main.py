@@ -19,8 +19,10 @@ try:
     import pytesseract
     from PIL import Image
     OCR_AVAILABLE = True
-except ImportError:
+    print("[startup] pytesseract e Pillow importados com sucesso")
+except ImportError as _e:
     OCR_AVAILABLE = False
+    print(f"[startup] OCR indisponível: {_e}")
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -303,7 +305,7 @@ async def validate_license(body: ValidateLicenseRequest, request: Request):
 
 # ── OCR ─────────────────────────────────────────────────
 
-MAX_OCR_PAGES = 15  # limite para evitar OOM/timeout no free tier
+MAX_OCR_PAGES = 8  # free tier: 512 MB RAM — 8 páginas é o limite seguro
 
 
 def ocr_pdf(pdf_data: bytes) -> str:
@@ -316,14 +318,16 @@ def ocr_pdf(pdf_data: bytes) -> str:
 
     for i in range(pages_to_process):
         page = doc[i]
-        # Renderiza a página como imagem em escala de cinza (sem poppler)
-        mat = pymupdf.Matrix(1.2, 1.2)  # zoom moderado: qualidade vs memória
+        # Zoom 0.8: resolução suficiente para OCR, ~40% menos memória que 1.2
+        mat = pymupdf.Matrix(0.8, 0.8)
         pix = page.get_pixmap(matrix=mat, colorspace=pymupdf.csGRAY)
-        img = Image.open(io.BytesIO(pix.tobytes("jpeg")))
-        text = pytesseract.image_to_string(img, lang="por+eng", config="--psm 1")
+        img_bytes = pix.tobytes("jpeg", jpg_quality=70)
+        del pix
+        img = Image.open(io.BytesIO(img_bytes))
+        text = pytesseract.image_to_string(img, lang="por+eng", config="--psm 1 --oem 1")
+        del img
         if text.strip():
             pages_text.append(f"## Página {i + 1}\n\n{text.strip()}")
-        del pix, img
 
     doc.close()
     result = "\n\n---\n\n".join(pages_text)
